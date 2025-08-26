@@ -291,7 +291,7 @@ def main():
                     # Records per page
                     records_per_page = st.selectbox(
                         "Records per page:",
-                        [5, 10, 20, 50, "All"],
+                        [10, 20, 30, 50, "All"],
                         index=0
                     )
                     
