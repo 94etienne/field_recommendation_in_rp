@@ -46,12 +46,20 @@ st.markdown("""
 @st.cache_resource
 def load_models():
     try:
-        model = load("model/decision_tree_model.pkl")
-        encoder = load("model/one_hot_encoder.pkl")
-        field_encoder = load("model/label_encoder.pkl")
+        # Get the directory where the script is located
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        
+        # Construct absolute paths
+        model_path = os.path.join(base_dir, "model", "decision_tree_model.pkl")
+        encoder_path = os.path.join(base_dir, "model", "one_hot_encoder.pkl")
+        field_encoder_path = os.path.join(base_dir, "model", "label_encoder.pkl")
+        
+        model = load(model_path)
+        encoder = load(encoder_path)
+        field_encoder = load(field_encoder_path)
         return model, encoder, field_encoder
-    except FileNotFoundError as e:
-        st.error(f"Model files not found: {e}")
+    except Exception as e:
+        st.error(f"Error loading model files: {str(e)}")
         st.stop()
 
 # Define the Excel file path
