@@ -14,9 +14,9 @@ st.set_page_config(
 @st.cache_resource
 def load_model():
     try:
-        model = load("../model/decision_tree_model.pkl")
-        encoder = load("../model/one_hot_encoder.pkl")
-        field_encoder = load("../model/label_encoder.pkl")
+        model = load("model/decision_tree_model.pkl")
+        encoder = load("model/one_hot_encoder.pkl")
+        field_encoder = load("model/label_encoder.pkl")
         return model, encoder, field_encoder
     except Exception as e:
         st.error(f"Error loading model: {e}")
@@ -386,4 +386,5 @@ def main():
                 )
 
 if __name__ == "__main__":
+
     main()
