@@ -247,7 +247,7 @@ def main():
                         """, unsafe_allow_html=True)
                         
                         st.success("Prediction saved successfully!")
-                        st.balloons()
+                        # st.balloons()
                         
                     except Exception as e:
                         st.error(f"An error occurred during prediction: {str(e)}")
