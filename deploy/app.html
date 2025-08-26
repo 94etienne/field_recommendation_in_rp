@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Incoming Student Field Prediction</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .form-column {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            color: #34495e;
+        }
+
+        input,
+        select {
+            width: 90%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus,
+        select:focus {
+            border-color: #3498db;
+            outline: none;
+        }
+
+        button {
+            padding: 12px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        /* Warning background color for the "Hide Predictions" button */
+        button.warning {
+            background-color: #ff9800;
+            /* Orange color for warning */
+        }
+
+        button.warning:hover {
+            background-color: #e68900;
+            /* Darker orange on hover */
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #ecf0f1;
+            border-radius: 4px;
+            text-align: center;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+
+        th {
+            background-color: #3498db;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        .pagination {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pagination-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .pagination-controls button {
+            padding: 8px 12px;
+        }
+
+        .pagination-controls select {
+            padding: 8px;
+            border-radius: 4px;
+        }
+
+        /* Error message styling */
+        .error-message {
+            color: #ff0000;
+            font-size: 14px;
+            margin-top: -10px;
+            margin-bottom: 10px;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 600px) {
+            .form-row {
+                flex-direction: column;
+            }
+
+            .form-column {
+                min-width: 100%;
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            .container {
+                padding: 15px;
+            }
+
+            input,
+            select {
+                font-size: 14px;
+            }
+
+            button {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Incoming Student Field Recommendation in Rwanda Polytechnic</h1>
+        <form id="predictionForm">
+            <div class="form-row">
+                <div class="form-column">
+                    <label for="high_school_stream">High School Stream:</label>
+                    <select id="high_school_stream" name="high_school_stream" required>
+                        <option value="">Select Stream</option>
+                        <option value="PCM">PCM (Physics, Chemistry, Math)</option>
+                        <option value="PCB">PCB (Physics, Chemistry, Biology)</option>
+                        <option value="MEG">MEG (Math, Economics, Geography)</option>
+                        <option value="MPG">MPG (Math, Physics, Geography)</option>
+                        <option value="HGL">HGL (History, Geography, Literature)</option>
+                    </select>
+
+                    <label for="physics">Physics score (0 if not applicable):</label>
+                    <input type="number" id="physics" name="physics" required>
+                    <div class="error-message" id="physics-error"></div>
+
+                    <label for="math">Math score (0 if not applicable):</label>
+                    <input type="number" id="math" name="math" required>
+                    <div class="error-message" id="math-error"></div>
+
+                    <label for="chemistry">Chemistry score (0 if not applicable):</label>
+                    <input type="number" id="chemistry" name="chemistry" required>
+                    <div class="error-message" id="chemistry-error"></div>
+                </div>
+                <div class="form-column">
+                    <label for="biology">Biology score (0 if not applicable):</label>
+                    <input type="number" id="biology" name="biology" required>
+                    <div class="error-message" id="biology-error"></div>
+
+                    <label for="economics">Economics score (0 if not applicable):</label>
+                    <input type="number" id="economics" name="economics" required>
+                    <div class="error-message" id="economics-error"></div>
+
+                    <label for="geography">Geography score (0 if not applicable):</label>
+                    <input type="number" id="geography" name="geography" required>
+                    <div class="error-message" id="geography-error"></div>
+
+                    <label for="history">History score (0 if not applicable):</label>
+                    <input type="number" id="history" name="history" required>
+                    <div class="error-message" id="history-error"></div>
+
+                    <label for="literature">Literature score (0 if not applicable):</label>
+                    <input type="number" id="literature" name="literature" required>
+                    <div class="error-message" id="literature-error"></div>
+                </div>
+            </div>
+            <button type="submit">Predict</button>
+        </form>
+
+        <div class="result" id="result"></div>
+
+        <h2>Prediction History</h2>
+        <button id="showButton">Show Predictions</button>
+
+        <div id="predictionTableContainer" style="display: none;">
+            <!-- Add a dropdown for filtering by Predicted_Field -->
+            <label for="filterField">Filter by Predicted Field:</label>
+            <select id="filterField">
+                <option value="">All Fields</option>
+                <!-- Options will be populated by JavaScript -->
+            </select>
+
+            <table id="predictionTable">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>High School Stream</th>
+                        <th>Physics</th>
+                        <th>Math</th>
+                        <th>Chemistry</th>
+                        <th>Biology</th>
+                        <th>Economics</th>
+                        <th>Geography</th>
+                        <th>History</th>
+                        <th>Literature</th>
+                        <th>Recommended Field OF Admission</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Rows will be populated by JavaScript -->
+                </tbody>
+            </table>
+
+            <div class="pagination">
+                <div class="pagination-controls">
+                    <button id="prevPage">Previous</button>
+                    <span id="pageInfo">Page 1 of 1</span>
+                    <button id="nextPage">Next</button>
+                </div>
+                <div>
+                    <label for="perPage">Records per page:</label>
+                    <select id="perPage">
+                        <option value="5">5</option>
+                        <option value="10">10</option>
+                        <option value="20">20</option>
+                        <option value="all">All</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentPage = 1;
+        let perPage = 5;
+        let totalPages = 1;
+        let currentFilter = "";
+
+        // Function to fetch and display predictions
+        async function fetchPredictions(page = 1, perPage = 5, filter = "") {
+            try {
+                const response = await fetch(`http://127.0.0.1:5000/get_predictions?page=${page}&per_page=${perPage}&predicted_field=${filter}`);
+                const data = await response.json();
+
+                const tableBody = document.querySelector("#predictionTable tbody");
+                tableBody.innerHTML = ""; // Clear existing rows
+
+                // Calculate the starting number for the current page
+                const startNumber = (page - 1) * perPage + 1;
+
+                data.data.forEach((row, i) => {
+                    const tr = document.createElement("tr");
+                    tr.innerHTML = `
+                <td>${startNumber + i}</td>
+                <td>${row.High_School_Stream}</td>
+                <td>${row.Physics}</td>
+                <td>${row.Math}</td>
+                <td>${row.Chemistry}</td>
+                <td>${row.Biology}</td>
+                <td>${row.Economics}</td>
+                <td>${row.Geography}</td>
+                <td>${row.History}</td>
+                <td>${row.Literature}</td>
+                <td>${row.Predicted_Field}</td>
+            `;
+                    tableBody.appendChild(tr);
+                });
+
+                // Update pagination controls
+                currentPage = data.current_page;
+                totalPages = data.total_pages;
+                document.getElementById("pageInfo").innerText = `Page ${currentPage} of ${totalPages}`;
+            } catch (error) {
+                console.error("Error fetching predictions:", error);
+            }
+        }
+        // Function to populate the filter dropdown
+        async function populateFilterDropdown() {
+            try {
+                const response = await fetch("http://127.0.0.1:5000/get_predictions?per_page=1000");
+                const data = await response.json();
+                const uniqueFields = [...new Set(data.data.map(row => row.Predicted_Field))];
+
+                const filterField = document.getElementById("filterField");
+                uniqueFields.forEach(field => {
+                    const option = document.createElement("option");
+                    option.value = field;
+                    option.textContent = field;
+                    filterField.appendChild(option);
+                });
+            } catch (error) {
+                console.error("Error fetching fields for filter:", error);
+            }
+        }
+
+        // Show/hide predictions when the button is clicked
+        document.getElementById("showButton").addEventListener("click", () => {
+            const button = document.getElementById("showButton");
+            const container = document.getElementById("predictionTableContainer");
+
+            if (container.style.display === "none" || container.style.display === "") {
+                container.style.display = "block";
+                button.innerText = "Hide Predictions";
+                button.classList.add("warning"); // Add warning class
+                fetchPredictions(currentPage, perPage, currentFilter); // Fetch and display predictions automatically
+            } else {
+                container.style.display = "none";
+                button.innerText = "Show Predictions";
+                button.classList.remove("warning"); // Remove warning class
+            }
+        });
+
+        // Handle filter change
+        document.getElementById("filterField").addEventListener("change", (event) => {
+            currentFilter = event.target.value;
+            currentPage = 1;
+            fetchPredictions(currentPage, perPage, currentFilter);
+        });
+
+        // Handle pagination controls
+        document.getElementById("prevPage").addEventListener("click", () => {
+            if (currentPage > 1) {
+                currentPage--;
+                fetchPredictions(currentPage, perPage, currentFilter);
+            }
+        });
+
+        document.getElementById("nextPage").addEventListener("click", () => {
+            if (currentPage < totalPages) {
+                currentPage++;
+                fetchPredictions(currentPage, perPage, currentFilter);
+            }
+        });
+
+        // Handle records per page change
+        document.getElementById("perPage").addEventListener("change", (event) => {
+            perPage = event.target.value === "all" ? 1000 : parseInt(event.target.value);
+            currentPage = 1;
+            fetchPredictions(currentPage, perPage, currentFilter);
+        });
+
+        // Populate the filter dropdown when the page loads
+        populateFilterDropdown();
+
+        // Handle form submission
+        // Handle form submission
+        document.getElementById("predictionForm").addEventListener("submit", async function (event) {
+            event.preventDefault();
+
+            // Clear all error messages
+            document.querySelectorAll(".error-message").forEach(error => {
+                error.textContent = "";
+            });
+
+            // Get the selected stream
+            const selectedStream = document.getElementById("high_school_stream").value;
+
+            // Define subjects for each stream
+            const streamSubjects = {
+                "PCM": ["Physics", "Chemistry", "Math"],
+                "PCB": ["Physics", "Chemistry", "Biology"],
+                "MEG": ["Math", "Economics", "Geography"],
+                "MPG": ["Math", "Physics", "Geography"],
+                "HGL": ["History", "Geography", "Literature"]
+            };
+
+            // Get the applicable subjects for the selected stream
+            const applicableSubjects = streamSubjects[selectedStream] || [];
+
+            // Validate marks for non-applicable subjects
+            let isValid = true;
+            const marksInputs = document.querySelectorAll("input[type='number']");
+            marksInputs.forEach(input => {
+                const subject = input.name.toLowerCase();
+                const value = parseFloat(input.value);
+
+                // Check if the subject is not applicable for the selected stream
+                if (!applicableSubjects.map(s => s.toLowerCase()).includes(subject)) {
+                    if (value !== 0) { // Marks must be exactly 0 for non-applicable subjects
+                        isValid = false;
+                        document.getElementById(`${subject}-error`).textContent = `Marks for ${subject} must be 0 as it is not part of the selected stream.`;
+                    }
+                } else {
+                    // Validate marks for applicable subjects
+                    if (isNaN(value) || value < 0 || value > 100) {
+                        isValid = false;
+                        document.getElementById(`${subject}-error`).textContent = "Marks must be between 0 and 100.";
+                    }
+                }
+            });
+
+            if (!isValid) {
+                return; // Stop form submission if validation fails
+            }
+
+            // Get form data
+            const formData = {
+                High_School_Stream: selectedStream,
+                Physics: parseFloat(document.getElementById("physics").value),
+                Math: parseFloat(document.getElementById("math").value),
+                Chemistry: parseFloat(document.getElementById("chemistry").value),
+                Biology: parseFloat(document.getElementById("biology").value),
+                Economics: parseFloat(document.getElementById("economics").value),
+                Geography: parseFloat(document.getElementById("geography").value),
+                History: parseFloat(document.getElementById("history").value),
+                Literature: parseFloat(document.getElementById("literature").value),
+            };
+
+            // Send data to Flask backend
+            try {
+                const response = await fetch("http://127.0.0.1:5000/predict", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify(formData),
+                });
+
+                const data = await response.json();
+                document.getElementById("result").innerText = `Recommended Predicted Field: ${data.predicted_field}`;
+
+                // Refresh the prediction history table
+                fetchPredictions(currentPage, perPage, currentFilter);
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById("result").innerText = "An error occurred. Please try again.";
+            }
+        });
+
+<!-- THIS WILL HIDE THE SUBJECT THAT ARE NOT RELATED TO THE SELECTED STREAM OF COMBINATION -->
+// Add an event listener to the high_school_stream dropdown
+document.getElementById("high_school_stream").addEventListener("change", function () {
+    const selectedStream = this.value;
+
+    // Define subjects for each stream
+    const streamSubjects = {
+        "PCM": ["Physics", "Chemistry", "Math"],
+        "PCB": ["Physics", "Chemistry", "Biology"],
+        "MEG": ["Math", "Economics", "Geography"],
+        "MPG": ["Math", "Physics", "Geography"],
+        "HGL": ["History", "Geography", "Literature"]
+    };
+
+    // Get the applicable subjects for the selected stream
+    const applicableSubjects = streamSubjects[selectedStream] || [];
+
+    // Loop through all subject inputs
+    const subjects = ["physics", "math", "chemistry", "biology", "economics", "geography", "history", "literature"];
+    subjects.forEach(subject => {
+        const inputElement = document.getElementById(subject);
+        const labelElement = inputElement.previousElementSibling; // Get the corresponding label
+        const errorElement = document.getElementById(`${subject}-error`);
+
+        if (applicableSubjects.map(s => s.toLowerCase()).includes(subject)) {
+            // If the subject is applicable, show the input and label
+            inputElement.style.display = "block";
+            labelElement.style.display = "block";
+            inputElement.value = ""; // Reset the value to allow user input
+            errorElement.textContent = "";
+        } else {
+            // If the subject is not applicable, hide the input and label
+            inputElement.style.display = "none";
+            labelElement.style.display = "none";
+            inputElement.value = 0; // Set the value to 0
+            errorElement.textContent = ""; // Clear any previous error message
+        }
+    });
+});
+    </script>
+</body>
+
+</html>
