@@ -1,15 +1,7 @@
-# Core framework
-streamlit==1.38.0
-
-# Data handling
-pandas==2.2.2
-numpy==1.26.4
+streamlit==1.48.1
+pandas==2.3.2
+numpy==2.3.2
 openpyxl==3.1.5
-
-# Machine Learning
 scikit-learn==1.4.2
-joblib==1.4.2
+joblib==1.5.1
 cloudpickle==3.0.0
-
-# Optional (for charts/visualizations if needed)
-matplotlib==3.9.2
